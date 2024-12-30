@@ -1,13 +1,28 @@
-const multer = require('multer');
-const path = require('path');
+const { createClient } = require('@supabase/supabase-js');
+const supabase = require('./supabase');
 
-const storage = multer.diskStorage({
-  destination: 'uploads/',
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
+async function uploadLogo(file) {
+  try {
+    const fileName = `${Date.now()}-${file.originalname}`;
+    const filePath = `logos/${fileName}`;
+
+    const { data, error } = await supabase.storage
+      .from('invoices')
+      .upload(filePath, file.buffer, {
+        contentType: file.mimetype,
+        upsert: false
+      });
+
+    if (error) throw error;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('invoices')
+      .getPublicUrl(filePath);
+
+    return publicUrl;
+  } catch (error) {
+    throw error;
   }
-});
+}
 
-const upload = multer({ storage });
-
-module.exports = upload;
+module.exports = { uploadLogo };

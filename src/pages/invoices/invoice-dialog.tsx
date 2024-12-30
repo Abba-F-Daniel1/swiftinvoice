@@ -1,4 +1,3 @@
-// invoice-dialog.tsx
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -7,6 +6,7 @@ import { api } from "@/lib/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 import {
   Select,
   SelectContent,
@@ -20,7 +20,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Plus, Trash2, Calculator, Upload, Receipt, Building2 } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  Calculator,
+  Upload,
+  Receipt,
+  Building2,
+} from "lucide-react";
 import type { Client } from "@/types";
 
 interface InvoiceItem {
@@ -89,20 +96,12 @@ export function InvoiceDialog({ open, onOpenChange }: InvoiceDialogProps) {
       if (data.logo) {
         formData.append("logo", data.logo);
       }
+
       const response = await api.post("/invoices", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-        responseType: "blob",
       });
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `invoice-${Date.now()}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
 
       return response.data;
     },
@@ -113,6 +112,11 @@ export function InvoiceDialog({ open, onOpenChange }: InvoiceDialogProps) {
         { service_name: "", description: "", quantity: 1, rate: 0, amount: 0 },
       ]);
       onOpenChange(false);
+      toast.success("Invoice created successfully");
+    },
+    onError: (error) => {
+      console.error("Error creating invoice:", error);
+      toast.error("Failed to create invoice");
     },
   });
 
@@ -170,7 +174,7 @@ export function InvoiceDialog({ open, onOpenChange }: InvoiceDialogProps) {
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <motion.div 
+          <motion.div
             className="grid grid-cols-1 md:grid-cols-2 gap-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -181,10 +185,10 @@ export function InvoiceDialog({ open, onOpenChange }: InvoiceDialogProps) {
                 <span className="dark:text-white">Select Client</span>
               </Label>
               <Select onValueChange={(value) => setValue("client_id", value)}>
-                <SelectTrigger className="dark:bg-slate-800 dark:border-slate-700">
+                <SelectTrigger className="dark:bg-slate-800 dark:text-white/50 dark:border-slate-700">
                   <SelectValue placeholder="Select a client" />
                 </SelectTrigger>
-                <SelectContent className="dark:bg-slate-800">
+                <SelectContent className="dark:bg-slate-800 dark:text-white/50">
                   {clients?.map((client) => (
                     <SelectItem key={client.id} value={client.id}>
                       {client.name} - {client.company}
@@ -204,13 +208,13 @@ export function InvoiceDialog({ open, onOpenChange }: InvoiceDialogProps) {
                 type="file"
                 accept="image/*"
                 onChange={(e) => setValue("logo", e.target.files?.[0])}
-                className="dark:bg-slate-800 dark:border-slate-700 file:bg-primary file:text-white file:border-0 file:px-4 file:py-2 file:mr-4 file:hover:bg-primary/90 transition-colors"
+                className="p-0 dark:bg-slate-800 dark:border-slate-700 file:bg-primary file:text-white file:border-0 file:px-4 file:py-2 file:mr-4 file:hover:bg-primary/90 transition-colors"
               />
             </div>
           </motion.div>
 
           {/* Items Table Header */}
-          <motion.div 
+          <motion.div
             className="bg-muted dark:bg-slate-800 p-4 rounded-t-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -245,7 +249,7 @@ export function InvoiceDialog({ open, onOpenChange }: InvoiceDialogProps) {
                       onChange={(e) =>
                         updateItem(index, "service_name", e.target.value)
                       }
-                      className="dark:bg-slate-800 dark:border-slate-700"
+                      className="dark:bg-slate-800 dark:border-slate-700 dark:text-white/50"
                     />
                   </div>
 
@@ -256,7 +260,7 @@ export function InvoiceDialog({ open, onOpenChange }: InvoiceDialogProps) {
                       onChange={(e) =>
                         updateItem(index, "description", e.target.value)
                       }
-                      className="dark:bg-slate-800 dark:border-slate-700"
+                      className="dark:bg-slate-800 dark:border-slate-700 dark:text-white/50"
                     />
                   </div>
 
@@ -264,10 +268,14 @@ export function InvoiceDialog({ open, onOpenChange }: InvoiceDialogProps) {
                     <Input
                       type="number"
                       min="1"
-                      className="text-right dark:bg-slate-800 dark:border-slate-700"
+                      className="text-right dark:text-white/50 dark:bg-slate-800 dark:border-slate-700"
                       value={item.quantity}
                       onChange={(e) =>
-                        updateItem(index, "quantity", parseInt(e.target.value) || 0)
+                        updateItem(
+                          index,
+                          "quantity",
+                          parseInt(e.target.value) || 0
+                        )
                       }
                     />
                   </div>
@@ -276,10 +284,14 @@ export function InvoiceDialog({ open, onOpenChange }: InvoiceDialogProps) {
                     <Input
                       type="number"
                       step="0.01"
-                      className="text-right dark:bg-slate-800 dark:border-slate-700"
+                      className="text-right dark:bg-slate-800 dark:border-slate-700 dark:text-white/50"
                       value={item.rate}
                       onChange={(e) =>
-                        updateItem(index, "rate", parseFloat(e.target.value) || 0)
+                        updateItem(
+                          index,
+                          "rate",
+                          parseFloat(e.target.value) || 0
+                        )
                       }
                     />
                   </div>
@@ -296,7 +308,7 @@ export function InvoiceDialog({ open, onOpenChange }: InvoiceDialogProps) {
                       onClick={() => removeItem(index)}
                       className="hover:bg-destructive/10 dark:hover:bg-destructive/20"
                     >
-                      <Trash2 className="h-4 w-4 text-destructive" />
+                      <Trash2 className="h-4 w-4 text-white" />
                     </Button>
                   </div>
                 </motion.div>
@@ -305,7 +317,7 @@ export function InvoiceDialog({ open, onOpenChange }: InvoiceDialogProps) {
           </div>
 
           {/* Totals */}
-          <motion.div 
+          <motion.div
             className="border-t dark:border-slate-800 pt-4 space-y-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -331,7 +343,7 @@ export function InvoiceDialog({ open, onOpenChange }: InvoiceDialogProps) {
             </div>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             className="flex justify-between pt-4 border-t dark:border-slate-800"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -341,7 +353,7 @@ export function InvoiceDialog({ open, onOpenChange }: InvoiceDialogProps) {
               type="button"
               variant="outline"
               onClick={addItem}
-              className="gap-2 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700"
+              className="gap-2 dark:bg-white dark:border-slate-700 dark:hover:bg-slate-400"
             >
               <Plus className="h-4 w-4" />
               Add Item
