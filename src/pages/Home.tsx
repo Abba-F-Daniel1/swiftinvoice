@@ -88,6 +88,23 @@ const Home = () => {
           Professional invoicing made easy for freelancers and small businesses
         </motion.p>
 
+         {/* New Get Started Section */}
+         <motion.div
+          variants={fadeInUp}
+          className="mb-16 p-8 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800/50 dark:to-gray-700/50 rounded-2xl shadow-lg"
+        >
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Ready to Get Started?
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-2xl mx-auto">
+            Click the Sign In button in the top right corner to create your account and start generating professional invoices in minutes.
+          </p>
+          {/* <div className="flex items-center justify-center gap-2 text-blue-600 dark:text-blue-400 font-medium">
+            <span>Sign in to continue</span>
+            <ArrowRight className="h-4 w-4 animate-bounce-x" />
+          </div> */}
+        </motion.div>
+
         <motion.div
           variants={fadeInUp}
           className="flex flex-wrap gap-4 justify-center mb-20"

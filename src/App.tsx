@@ -18,6 +18,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Home from "./pages/Home";
 import Footer from "@/components/layout/Footer";
 
+
 const queryClient = new QueryClient();
 
 function App() {
