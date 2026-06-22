@@ -43,14 +43,28 @@ npm install
 
 # Start development server
 npm run dev
+
+# In a second terminal, start backend
+cd backend
+npm install
+npm start
 ```
 ## 🔧 Environment Variables
 ```bash
 VITE_CLERK_PUBLISHABLE_KEY=
 VITE_API_URL=
+
+# Backend (.env in backend/)
+CLERK_SECRET_KEY=
 SUPABASE_URL=
-SUPABASE_KEY=
+SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_KEY=
 ```
+
+## 🚢 Deployment
+
+- Frontend (Vercel) + Backend (Render) deployment guide: [docs/deployment.md](docs/deployment.md)
+
 ## 🤝 Contributing
 ```bash
 Fork repo
