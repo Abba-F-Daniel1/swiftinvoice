@@ -104,7 +104,8 @@ export function evaluateHardening() {
     buildCheck(
       'vercel_config_installs_dev_dependencies',
       hasVercelConfig &&
-      vercelConfig.includes('"installCommand": "npm install --include=dev"') &&
+      vercelConfig.includes('"installCommand"') &&
+      vercelConfig.includes('--include=dev') &&
       vercelConfig.includes('"buildCommand": "vite build"'),
       'vercel.json must install dev dependencies and build with vite build.'
     ),
