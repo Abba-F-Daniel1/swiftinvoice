@@ -12,7 +12,7 @@ This document defines measurable checks for the auth and integration hardening s
 6. Environment files remain ignored by git.
 7. Frontend and backend env example files are present.
 8. Deployment provider configs (Vercel and Render) are present.
-9. Vercel SPA rewrites, Vercel install/build commands, Render auto-deploy trigger, and backend health check configuration are enforced.
+9. Vercel SPA rewrites, Vercel install/build commands, Render auto-deploy trigger, backend health check configuration, and backend build-script fallback are enforced.
 10. Deployment runbook remains present and references verification command.
 
 ## Gate Test

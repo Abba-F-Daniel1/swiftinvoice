@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "build": "node -e \"console.log('No backend build step required')\"",
     "start": "node server.js",
     "serve": "nodemon server.js"
+  },
+  "engines": {
+    "node": "20.x"
   },
   "dependencies": {
     "@clerk/clerk-sdk-node": "^5.1.4",

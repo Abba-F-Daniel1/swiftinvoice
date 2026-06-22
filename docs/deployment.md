@@ -44,6 +44,12 @@ This project deploys cleanly as:
    - Optional: `PORT`
 4. Deploy.
 
+If a Render deploy log shows `Missing script: "build"`, your service is likely using a default build command (`npm install; npm run build`) instead of this guide's backend settings. Update Render service settings to:
+
+- Root directory: `backend`
+- Build command: `npm install`
+- Start command: `npm start`
+
 ## Local smoke test before production
 
 1. Root frontend env: copy `.env.example` to `.env`

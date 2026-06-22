@@ -31,6 +31,7 @@ export function evaluateHardening() {
   const hasVercelConfig = fileExists('vercel.json');
   const hasRenderConfig = fileExists('render.yaml');
   const deploymentDoc = readFile('docs/deployment.md');
+  const backendPackage = JSON.parse(readFile('backend/package.json'));
   const vercelConfig = hasVercelConfig ? readFile('vercel.json') : '';
   const renderConfig = hasRenderConfig ? readFile('render.yaml') : '';
 
@@ -95,6 +96,11 @@ export function evaluateHardening() {
       'backend_env_example_exists',
       hasBackendEnvExample,
       'backend/.env.example must exist for backend deployment setup.'
+    ),
+    buildCheck(
+      'backend_package_has_build_script',
+      typeof backendPackage?.scripts?.build === 'string' && backendPackage.scripts.build.length > 0,
+      'backend/package.json should define a build script to avoid Render default build-command failures.'
     ),
     buildCheck(
       'vercel_config_has_spa_rewrite',
