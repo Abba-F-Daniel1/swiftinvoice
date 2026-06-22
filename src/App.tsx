@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ClerkProvider } from "@clerk/clerk-react";
+import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
@@ -20,6 +20,36 @@ import Footer from "@/components/layout/Footer";
 
 
 const queryClient = new QueryClient();
+
+function ClerkTokenSync() {
+  const { isSignedIn, getToken } = useAuth();
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const syncToken = async () => {
+      if (!isSignedIn) {
+        localStorage.removeItem("token");
+        return;
+      }
+
+      const token = await getToken();
+      if (isMounted && token) {
+        localStorage.setItem("token", token);
+      }
+    };
+
+    syncToken().catch((error) => {
+      console.error("Failed to sync Clerk token:", error);
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [getToken, isSignedIn]);
+
+  return null;
+}
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -47,6 +77,7 @@ function App() {
 
   return (
     <ClerkProvider publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}>
+      <ClerkTokenSync />
       <QueryClientProvider client={queryClient}>
         <Router>
         <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
