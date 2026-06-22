@@ -10,6 +10,10 @@ function readFile(relativePath) {
   return fs.readFileSync(path.join(repoRoot, relativePath), 'utf8');
 }
 
+function fileExists(relativePath) {
+  return fs.existsSync(path.join(repoRoot, relativePath));
+}
+
 function buildCheck(name, pass, details) {
   return { name, pass: Boolean(pass), details };
 }
@@ -22,6 +26,13 @@ export function evaluateHardening() {
   const axiosTs = readFile('src/lib/axios.ts');
   const apiJs = readFile('src/api.js');
   const ignore = readFile('.gitignore');
+  const hasFrontendEnvExample = fileExists('.env.example');
+  const hasBackendEnvExample = fileExists('backend/.env.example');
+  const hasVercelConfig = fileExists('vercel.json');
+  const hasRenderConfig = fileExists('render.yaml');
+  const deploymentDoc = readFile('docs/deployment.md');
+  const vercelConfig = hasVercelConfig ? readFile('vercel.json') : '';
+  const renderConfig = hasRenderConfig ? readFile('render.yaml') : '';
 
   const authIndex = server.indexOf("app.use(authenticateToken)");
   const routesIndex = server.indexOf("app.use('/', routes)");
@@ -74,6 +85,31 @@ export function evaluateHardening() {
       'gitignore_protects_env_files',
       ignore.includes('.env') && ignore.includes('.env.*') && ignore.includes('backend/.env'),
       '.gitignore must ignore .env, .env.*, and backend/.env.'
+    ),
+    buildCheck(
+      'frontend_env_example_exists',
+      hasFrontendEnvExample,
+      '.env.example must exist at repository root for frontend deployment setup.'
+    ),
+    buildCheck(
+      'backend_env_example_exists',
+      hasBackendEnvExample,
+      'backend/.env.example must exist for backend deployment setup.'
+    ),
+    buildCheck(
+      'vercel_config_has_spa_rewrite',
+      hasVercelConfig && vercelConfig.includes('"destination": "/index.html"'),
+      'vercel.json must include an SPA rewrite to /index.html.'
+    ),
+    buildCheck(
+      'render_config_has_health_check',
+      hasRenderConfig && renderConfig.includes('healthCheckPath: /health') && renderConfig.includes('rootDir: backend'),
+      'render.yaml must target backend root and configure /health check path.'
+    ),
+    buildCheck(
+      'deployment_doc_exists_and_mentions_providers',
+      deploymentDoc.includes('Vercel') && deploymentDoc.includes('Render') && deploymentDoc.includes('verify:hardening'),
+      'docs/deployment.md must describe Vercel + Render deployment and verification.'
     ),
   ];
 
