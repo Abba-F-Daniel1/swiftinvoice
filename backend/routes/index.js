@@ -3,8 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const supabase = require('../config/supabase');
 const pdfService = require('../services/pdfService');
-const fs = require('fs-extra');
-const path = require('path');
+const path = require('node:path');
 
 // Multer configuration
 const upload = multer({
@@ -71,7 +70,7 @@ router.get('/invoices', async (req, res) => {
   try {
     const { data: invoices, error } = await supabase
       .from('invoices')
-      .select(`*, client:clients(*), items:invoice_items(*)`)
+      .select('*, client:clients(*), items:invoice_items(*)')
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -238,6 +237,38 @@ router.delete('/clients/:id', async (req, res) => {
 
     if (error) throw error;
     res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Service Routes
+router.get('/services', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('services')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    res.json(data || []);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post('/services', async (req, res) => {
+  try {
+    const { description, rate } = req.body;
+
+    const { data, error } = await supabase
+      .from('services')
+      .insert([{ description, rate }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.status(201).json(data);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

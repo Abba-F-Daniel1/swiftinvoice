@@ -14,9 +14,10 @@ export interface Client {
 }
 
 export interface Service {
-  id: number;
+  id: string;
   description: string;
   rate: number;
+  created_at?: string;
 }
 
 export interface Invoice {
@@ -25,7 +26,7 @@ export interface Invoice {
   client?: Client;
   items?: InvoiceItem[];
   logo_url?: string;
-  status: "draft" | "sent" | "paid";
+  status: "draft" | "sent" | "paid" | "overdue";
   created_at: string;
 }
 

@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:gate": "node --test tests/gate/**/*.test.mjs",
+    "eval:hardening": "node evals/hardening/run.mjs",
+    "verify:hardening": "npm run test:gate && npm run eval:hardening"
   },
   "dependencies": {
     "@clerk/clerk-react": "^4.32.4",
