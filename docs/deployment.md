@@ -17,14 +17,15 @@ This project deploys cleanly as:
 1. Import this repository in Vercel.
 2. Build settings:
    - Framework preset: Vite
-   - Build command: `npm run build`
+   - Install command: `npm ci --include=dev --no-audit --no-fund`
+   - Build command: `vite build`
    - Output directory: `dist`
 3. Set environment variables:
    - `VITE_CLERK_PUBLISHABLE_KEY`
    - `VITE_API_URL` (your backend URL)
 4. Deploy.
 
-`vercel.json` is included for SPA route rewrites.
+`vercel.json` is included for SPA route rewrites and build configuration.
 
 ## Backend (Render)
 
@@ -33,6 +34,7 @@ This project deploys cleanly as:
    - Root directory: `backend`
    - Build command: `npm install`
    - Start command: `npm start`
+   - Auto deploy trigger: `commit`
    - Health check path: `/health`
 3. Set environment variables:
    - `CLERK_SECRET_KEY`

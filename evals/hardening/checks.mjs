@@ -115,6 +115,11 @@ export function evaluateHardening() {
       'render.yaml must target backend root and configure /health check path.'
     ),
     buildCheck(
+      'render_config_uses_autodeploytrigger',
+      hasRenderConfig && renderConfig.includes('autoDeployTrigger: commit') && !renderConfig.includes('autoDeploy:'),
+      'render.yaml should use autoDeployTrigger instead of deprecated autoDeploy.'
+    ),
+    buildCheck(
       'deployment_doc_exists_and_mentions_providers',
       deploymentDoc.includes('Vercel') && deploymentDoc.includes('Render') && deploymentDoc.includes('verify:hardening'),
       'docs/deployment.md must describe Vercel + Render deployment and verification.'
