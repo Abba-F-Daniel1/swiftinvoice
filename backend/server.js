@@ -3,7 +3,6 @@ const express = require('express');
 const cors = require('cors');
 const routes = require('./routes');
 const authenticateToken = require('./middleware/auth');
-const { requireAuth } = require('@clerk/express');
 
 const app = express();
 
@@ -22,6 +21,13 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
+// Middleware
+app.use(authenticateToken); // Use the authentication middleware
+
 // Use routes
 app.use('/', routes);
 
@@ -34,12 +40,6 @@ app.use((err, req, res, next) => {
     details: err.details || 'No additional details'
   });
 });
-
-// Middleware
-app.use(authenticateToken); // Use the authentication middleware
-
-// Middleware to authenticate requests
-app.use(requireAuth());
 
 const PORT = process.env.PORT || 9000;
 

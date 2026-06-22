@@ -1,21 +1,13 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Tags, BriefcaseBusiness } from "lucide-react";
+import { Plus, BriefcaseBusiness } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { ServiceDialog } from "./components/service-dialog";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/axios";
 import { formatCurrency } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
-
-interface Service {
-  id: number;
-  name: string;
-  description: string;
-  rate: number;
-  category: string;
-}
+import type { Service } from "@/types";
 
 export function Services() {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,22 +21,11 @@ export function Services() {
   });
 
   const columns = [
-    { accessorKey: "name", header: "Name" },
     { accessorKey: "description", header: "Description" },
     {
       accessorKey: "rate",
       header: "Rate",
       cell: ({ row }) => formatCurrency(row.original.rate),
-    },
-    {
-      accessorKey: "category",
-      header: "Category",
-      cell: ({ row }) => (
-        <Badge variant="secondary">
-          <Tags className="mr-1 h-3 w-3" />
-          {row.original.category}
-        </Badge>
-      ),
     },
   ];
 

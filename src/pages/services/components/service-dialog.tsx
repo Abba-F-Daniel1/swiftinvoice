@@ -6,15 +6,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { api } from '@/lib/axios';
 import { toast } from 'sonner';
 
 const formSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  description: z.string().min(10, 'Description must be at least 10 characters'),
-  rate: z.string().transform((val) => parseFloat(val)),
-  categoryId: z.string(),
+  description: z.string().min(3, 'Description must be at least 3 characters'),
+  rate: z.coerce.number().min(0, 'Rate must be at least 0'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -29,10 +26,8 @@ export function ServiceDialog({ open, onOpenChange }: ServiceDialogProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
       description: '',
-      rate: '',
-      categoryId: '',
+      rate: 0,
     },
   });
 
@@ -59,18 +54,6 @@ export function ServiceDialog({ open, onOpenChange }: ServiceDialogProps) {
           <form onSubmit={form.handleSubmit((data) => mutate(data))} className="space-y-4">
             <FormField
               control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="description"
               render={({ field }) => (
                 <FormItem>
@@ -90,27 +73,6 @@ export function ServiceDialog({ open, onOpenChange }: ServiceDialogProps) {
                   <FormControl>
                     <Input {...field} type="number" min="0" step="0.01" />
                   </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="categoryId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="1">Development</SelectItem>
-                      <SelectItem value="2">Design</SelectItem>
-                      <SelectItem value="3">Consulting</SelectItem>
-                    </SelectContent>
-                  </Select>
                 </FormItem>
               )}
             />
