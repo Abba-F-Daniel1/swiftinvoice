@@ -71,14 +71,14 @@ export function evaluateHardening() {
     buildCheck(
       'frontend_token_sync_component_exists',
       app.includes('function ClerkTokenSync()') &&
-        app.includes('localStorage.setItem("token", token)') &&
-        app.includes('<ClerkTokenSync />'),
+      app.includes('localStorage.setItem("token", token)') &&
+      app.includes('<ClerkTokenSync />'),
       'src/App.tsx must keep Clerk token synchronization in place.'
     ),
     buildCheck(
       'axios_interceptor_supports_token_keys',
       axiosTs.includes("localStorage.getItem('token') || localStorage.getItem('clerkToken')") &&
-        apiJs.includes("localStorage.getItem('token') || localStorage.getItem('clerkToken')"),
+      apiJs.includes("localStorage.getItem('token') || localStorage.getItem('clerkToken')"),
       'src/lib/axios.ts and src/api.js must support token and clerkToken fallback.'
     ),
     buildCheck(
@@ -100,6 +100,13 @@ export function evaluateHardening() {
       'vercel_config_has_spa_rewrite',
       hasVercelConfig && vercelConfig.includes('"destination": "/index.html"'),
       'vercel.json must include an SPA rewrite to /index.html.'
+    ),
+    buildCheck(
+      'vercel_config_installs_dev_dependencies',
+      hasVercelConfig &&
+      vercelConfig.includes('"installCommand": "npm install --include=dev"') &&
+      vercelConfig.includes('"buildCommand": "vite build"'),
+      'vercel.json must install dev dependencies and build with vite build.'
     ),
     buildCheck(
       'render_config_has_health_check',
